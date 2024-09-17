@@ -204,6 +204,7 @@ PLATFORMS
 
 DEPENDENCIES
   debugmate!
+  rspec-rails
   sqlite3
 
 BUNDLED WITH

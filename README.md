@@ -1,4 +1,4 @@
-# Cockpit
+# DebugMate
 Exception handling for Ruby on Rails
 
 <img width="1512" alt="Screenshot 2023-03-01 at 16 12 54" src="https://user-images.githubusercontent.com/103602376/222242108-db9da774-5985-4188-a22e-e9514b4494ad.png">
@@ -7,21 +7,21 @@ Exception handling for Ruby on Rails
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "cockpit"
+gem "debugmate"
 ```
 
 While the gem is not published in RubyGems, you can install from this repo directly:
 
 ```ruby
-gem 'cockpit', :git => 'https://github.com/devsquad-cockpit/rails.git', :branch => 'main'
+gem 'debugmate', :git => 'https://github.com/DebugMate/rails', :branch => 'main'
 ```
 
 You can also clone this repo and point the path to the gem if you want to contribute or test locally:
 
-`../cockpit` is relative to the project and the folder name is the one you decided when cloning the repo.
+`../debugmate` is relative to the project and the folder name is the one you decided when cloning the repo.
 
 ```ruby
-gem "cockpit", :path => "../cockpit"
+gem "debugmate", :path => "../debugmate"
 ```
 
 And then execute:
@@ -31,28 +31,28 @@ bundle
 
 Or install it yourself as:
 ```bash
-gem install cockpit
+gem install debugmate
 ```
 
 ## Usage
-Create `config/cockpit.yml` in your rails application and provide the following values:
+Create `config/debugmate.yml` in your rails application and provide the following values:
 
 ```yaml
 data:
-  domain: http://cockpit.test
+  domain: http://debugmate.test
   enabled: true
   token: 9dd70ed8-f3b2-4244-890e-c4f666d108ed
 ```
 
-Create `config/initializers/cockpit.rb` with the following line:
+Create `config/initializers/debugmate.rb` with the following line:
 
 ```ruby
-COCKPIT_CONFIG = YAML.load_file("#{Rails.root}/config/cockpit.yml")
+DEBUGMATE_CONFIG = YAML.load_file("#{Rails.root}/config/debugmate.yml")
 ```
 
 ## Get the last executed query with the exception
 
-To be able to get the query, you must add the following boilerplate code to the `cockpit.rb` initializer.
+To be able to get the query, you must add the following boilerplate code to the `debugmate.rb` initializer.
 
 This is the only way to get Rails to intercept the call for the moment:
 
@@ -63,15 +63,15 @@ module ActiveRecord
       alias_method :original_sql, :sql
 
       def sql(event)
-        Cockpit::ExceptionHandler.last_executed_query = event.payload[:sql] if COCKPIT_CONFIG['data']['enabled'] === true
-        Cockpit::ExceptionHandler.last_executed_binds = event.payload[:binds] if COCKPIT_CONFIG['data']['enabled'] === true
+        Debugmate::ExceptionHandler.last_executed_query = event.payload[:sql] if DEBUGMATE_CONFIG['data']['enabled'] === true
+        Debugmate::ExceptionHandler.last_executed_binds = event.payload[:binds] if DEBUGMATE_CONFIG['data']['enabled'] === true
         original_sql(event)
       end
     end
 end
 ```
 
-Edit `config/application.rb` to use Cockpit.
+Edit `config/application.rb` to use Debugmate.
 
 Add the middleware inside the Application class, ideally as the last line, following the example:
 
@@ -88,7 +88,7 @@ end
 You can check that your setup is correct by issuing the test command as follows:
 
 ```bash
-rails cockpit:test
+rails debugmate:test
 ```
 
 ## Get the current User
@@ -99,7 +99,7 @@ to know the current user that caused the exception, you must provide a public me
 
 This method must return a Hash with the `id, name and email`.
 
-You can follow the example. Cockpit only needs the Hash:
+You can follow the example. Debugmate only needs the Hash:
 
 ```ruby
 class ApplicationController < ActionController::Base
@@ -117,7 +117,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-## Sending exceptions manually to Cockpit
+## Sending exceptions manually to Debugmate
 
 If you want to catch an exception manually, you can do so using the `Publish` class. Just pass the exception and call
 `execute`
@@ -127,28 +127,28 @@ def index
   @articles = Article.test
 rescue => my_error
   begin
-    Cockpit::Publish.new(my_error).execute
+    Debugmate::Publish.new(my_error).execute
   end
 end
 ```
 
 ### Sending information about the request
 
-If you want Cockpit to register more details about the exception, just pass the request along:
+If you want Debugmate to register more details about the exception, just pass the request along:
 
 ```ruby
 def index
   @articles = Article.test
 rescue => my_error
   begin
-    Cockpit::Publish.new(my_error, request).execute
+    Debugmate::Publish.new(my_error, request).execute
   end
 end
 ```
 
-### Sending extra info to Cockpit
+### Sending extra info to Debugmate
 
-If you want to send some extra info about the exception, you can make use of the `extra_data` parameter. Cockpit will
+If you want to send some extra info about the exception, you can make use of the `extra_data` parameter. Debugmate will
 display it in its `Context` tab.
 
 ```ruby
@@ -157,7 +157,7 @@ def index
   rescue => my_error
     begin
       extra = {hello: 'world'}
-      Cockpit::Publish.new(my_error, request, extra).execute
+      Debugmate::Publish.new(my_error, request, extra).execute
     end
   end
 ```
