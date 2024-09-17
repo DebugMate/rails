@@ -1,4 +1,4 @@
-module Cockpit
+module Debugmate
     class Trace
         def initialize(exception, request = {})
             @exception = exception

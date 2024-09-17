@@ -1,6 +1,6 @@
-require 'cockpit/curl'
+require 'debugmate/curl'
 
-module Cockpit
+module Debugmate
     class Context
         attr_accessor :env, :extra_data
 

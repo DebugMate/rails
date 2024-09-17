@@ -1,4 +1,4 @@
-module Cockpit
+module Debugmate
     class Curl
         def initialize(headers, params, url, method)
             @headers = headers
