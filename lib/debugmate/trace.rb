@@ -7,7 +7,6 @@ module Debugmate
         end
 
         def parsed
-
             wrapped = ActionDispatch::ExceptionWrapper.new(ActiveSupport::BacktraceCleaner.new, @exception)
         
             function = @env['action_dispatch.request.parameters']['action'] if @env['action_dispatch.request.parameters'] && @env['action_dispatch.request.parameters']['action']
@@ -21,6 +20,8 @@ module Debugmate
                     preview: wrapped.source_extracts[wrapped.source_to_show_id][:code] ||= nil
                 }
             ]
+
+            trace
         end
     end
 end

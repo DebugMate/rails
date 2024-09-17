@@ -20,6 +20,8 @@ module Debugmate
             }
 
             result = Net::HTTP.post(uri, payload.to_json, headers)
+
+            result
         end
 
         def payload
@@ -39,6 +41,8 @@ module Debugmate
                 user: context.user || [],
                 context: context.extra_data || []
             }
+
+            data
         end
     end
 end

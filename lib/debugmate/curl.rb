@@ -41,6 +41,8 @@ module Debugmate
             #{headers_line.chop}
             #{post_fields.chop}
             CURL
+
+            curl
         end
     end
 end
