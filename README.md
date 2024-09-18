@@ -80,7 +80,7 @@ module Blog
   class Application < Rails::Application
     # --- Here is the exiting code ---
 
-    config.middleware.use Cockpit::ExceptionHandler
+    config.middleware.use Debugmate::ExceptionHandler
   end
 end
 ```
