@@ -1,7 +1,7 @@
-module Cockpit
+module Debugmate
   class Railtie < ::Rails::Railtie
     rake_tasks do
-      load 'tasks/cockpit_tasks.rake'
+      load 'tasks/debugmate_tasks.rake'
     end
   end
 end

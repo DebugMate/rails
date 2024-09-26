@@ -1,13 +1,13 @@
-require_relative "lib/cockpit/version"
+require_relative "lib/debugmate/version"
 
 Gem::Specification.new do |spec|
-  spec.name        = "cockpit"
-  spec.version     = Cockpit::VERSION
+  spec.name        = "debugmate"
+  spec.version     = Debugmate::VERSION
   spec.authors     = ["Eduardo Barijan"]
   spec.email       = ["eduardo.barijan@devsquad.com"]
   spec.homepage    = "http://127.0.0.1"
-  spec.summary     = "Summary of Cockpit."
-  spec.description = "Description of Cockpit."
+  spec.summary     = "Summary of DebugMate."
+  spec.description = "Description of DebugMate."
     spec.license     = "MIT"
   
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
