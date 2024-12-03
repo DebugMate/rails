@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/DebugMate/rails"
+  spec.metadata["documentation_uri"] = "#{spec.homepage}#readme"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     Dir["lib/**/*.rb", "LICENSE", "Rakefile", "README.md"]
