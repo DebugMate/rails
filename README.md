@@ -1,8 +1,6 @@
 # DebugMate
 Exception handling for Ruby on Rails
 
-<img width="1512" alt="Screenshot 2023-03-01 at 16 12 54" src="https://user-images.githubusercontent.com/103602376/222242108-db9da774-5985-4188-a22e-e9514b4494ad.png">
-
 ## Installation
 Add this line to your application's Gemfile:
 
