@@ -1,4 +1,4 @@
-module Cockpit
+module Debugmate
     class Curl
         def initialize(headers, params, url, method)
             @headers = headers
@@ -41,6 +41,8 @@ module Cockpit
             #{headers_line.chop}
             #{post_fields.chop}
             CURL
+
+            curl
         end
     end
 end

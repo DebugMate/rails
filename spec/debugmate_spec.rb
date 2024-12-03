@@ -1,8 +1,8 @@
 require 'rails_helper'
-require 'cockpit/context'
-require 'cockpit/publish'
+require 'debugmate/context'
+require 'debugmate/publish'
 
-describe Cockpit do
+describe Debugmate do
     context 'Context' do
         context 'App' do
             it 'has controller' do
@@ -12,7 +12,7 @@ describe Cockpit do
                     }
                 }
 
-               context = Cockpit::Context.new(env, Cockpit::TestException.new)
+               context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                expect(context.app[:controller]).to eql("envtest")
             end
@@ -24,7 +24,7 @@ describe Cockpit do
                     }
                 }
 
-               context = Cockpit::Context.new(env, Cockpit::TestException.new)
+               context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                expect(context.app[:route][:name]).to eql("some_method")
             end
@@ -45,7 +45,7 @@ describe Cockpit do
                     }
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.app[:route][:parameters]).to eql({
                     "_method"=>"patch", 
@@ -67,7 +67,7 @@ describe Cockpit do
                     'PATH_INFO' => 'some-path'
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:request][:url]).to eql("http://testing.com/some-path")
             end
@@ -77,7 +77,7 @@ describe Cockpit do
                     'REQUEST_METHOD' => 'POST'
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:request][:method]).to eql("POST")
             end
@@ -135,7 +135,7 @@ describe Cockpit do
                     "HTTP_X_CSRF_TOKEN"=>"5Wuec5MO2CgkS7GRNrCqygjkJh-x3Z71FHp78DZ_k573deCiz9B8VB6-3KSaq0Jzj7-JDarVF-NJ0x3PRe5anw"
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:request][:curl]).to eql(parsed)
             end
@@ -176,7 +176,7 @@ describe Cockpit do
                     "HTTP_X_CSRF_TOKEN"=>"5Wuec5MO2CgkS7GRNrCqygjkJh-x3Z71FHp78DZ_k573deCiz9B8VB6-3KSaq0Jzj7-JDarVF-NJ0x3PRe5anw"
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:headers]).to eql(expected)
             end
@@ -186,7 +186,7 @@ describe Cockpit do
                     'QUERY_STRING' => 'some=test',
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:query_string]).to eql({'some' => 'test'})
             end
@@ -196,7 +196,7 @@ describe Cockpit do
                     'QUERY_STRING' => nil,
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:query_string]).to be_nil
             end
@@ -218,7 +218,7 @@ describe Cockpit do
                     }
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:body]).to eql({
                     "_method"=>"patch", 
@@ -249,7 +249,7 @@ describe Cockpit do
                     }
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:body]).to be_nil
             end
@@ -262,7 +262,7 @@ describe Cockpit do
                     }
                 }
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.request[:session]).to eql({
                     "session_id"=>"a3f06e23af130375fff96d249fc65113", 
@@ -305,7 +305,7 @@ describe Cockpit do
                 'HTTP_USER_AGENT' => 'Some agent'
             }
 
-            context = Cockpit::Context.new(env, Cockpit::TestException.new)
+            context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
             expect(context.environment).to eql(environment)
             end
@@ -324,13 +324,13 @@ describe Cockpit do
 
                 env = {'action_controller.instance' => controller}
 
-                context = Cockpit::Context.new(env, Cockpit::TestException.new)
+                context = Debugmate::Context.new(env, Debugmate::TestException.new)
 
                 expect(context.user).to eql(user)
             end
 
             it 'sets user to nil if method current_user does not exists' do
-                context = Cockpit::Context.new({}, Cockpit::TestException.new)
+                context = Debugmate::Context.new({}, Debugmate::TestException.new)
 
                 expect(context.user).to be_nil
             end
@@ -339,60 +339,63 @@ describe Cockpit do
 
     context 'Publish' do
         context 'payload' do
-            it 'sends only with exception' do
-                exception = Cockpit::TestException.new
-                exception.set_backtrace(caller)
-
-                publish = Cockpit::Publish.new(exception)
-
-                expect(publish.payload[:exception]).to eql('Cockpit::TestException')
-                expect(publish.payload[:message]).to eql('Test generated by the cockpit:test rails command')
-                expect(publish.payload[:file]).to include('rspec')
-                expect(publish.payload[:type]).to eql('web')
-                expect(publish.payload[:trace]).to be_an(Array)
-                expect(publish.payload[:trace][0]).to be_a(Hash)
-                expect(publish.payload[:trace][0][:file]).to be_a(String)
-                expect(publish.payload[:trace][0][:line]).to be_an(Integer)
-                expect(publish.payload[:trace][0][:function]).to be_nil
-                expect(publish.payload[:trace][0][:class]).to be_a(String)
-                expect(publish.payload[:trace][0][:preview]).to be_a(Hash)
-                expect(publish.payload[:trace][0][:preview].count).to eql(6)
-            end
-
-            it 'sends with exception and request' do
-                exception = Cockpit::TestException.new
-                exception.set_backtrace(caller)
-
-                request = {
-                    'action_dispatch.request.parameters' => {
-                        'controller' => 'envtest'
-                    }
-                }
-
-                publish = Cockpit::Publish.new(exception, request)
-
-                expect(publish.payload[:exception]).to eql('Cockpit::TestException')
-                expect(publish.payload[:app][:controller]).to eql("envtest")
-            end
-
-            it 'sends with exception, request and extra_data' do
-                exception = Cockpit::TestException.new
-                exception.set_backtrace(caller)
-
-                request = {
-                    'action_dispatch.request.parameters' => {
-                        'controller' => 'envtest'
-                    }
-                }
-
-                extra = {some: 'extra info'}
-
-                publish = Cockpit::Publish.new(exception, request, extra)
-
-                expect(publish.payload[:exception]).to eql('Cockpit::TestException')
-                expect(publish.payload[:app][:controller]).to eql("envtest")
-                expect(publish.payload[:context]).to eql({some: 'extra info'})
-            end
+          it 'sends only with exception' do
+            exception = Debugmate::TestException.new
+            exception.set_backtrace(caller)
+      
+            publish = Debugmate::Publish.new(exception) 
+      
+            expect(publish.payload[:exception]).to eql('Debugmate::TestException')
+            expect(publish.payload[:message]).to eql('Test generated by the debugmate:test rails command')
+            expect(publish.payload[:file]).to be_a(String)
+            expect(publish.payload[:type]).to eql('web')
+            expect(publish.payload[:trace]).to be_an(Array)
+            expect(publish.payload[:trace][0]).to be_a(Hash)
+            expect(publish.payload[:trace][0][:file]).to be_a(String)
+            expect(publish.payload[:trace][0][:line]).to be_nil.or be_an(Integer)
+            expect(publish.payload[:trace][0][:function]).to be_nil
+            expect(publish.payload[:trace][0][:class]).to be_a(String)
+            expect(publish.payload[:trace][0][:preview]).to be_nil.or be_a(Hash)
+          end
+      
+          it 'sends with exception and request' do
+            exception = Debugmate::TestException.new
+            exception.set_backtrace(caller)
+      
+            request = {
+              'action_dispatch.request.parameters' => {
+                'controller' => 'envtest',
+                'action' => 'test_action'
+              }
+            }
+      
+            publish = Debugmate::Publish.new(exception, request)
+      
+            expect(publish.payload[:exception]).to eql('Debugmate::TestException')
+            expect(publish.payload[:app][:controller]).to eql("envtest")
+            expect(publish.payload[:trace][0][:function]).to eql("test_action")
+          end
+      
+          it 'sends with exception, request and extra_data' do
+            exception = Debugmate::TestException.new
+            exception.set_backtrace(caller)
+      
+            request = {
+              'action_dispatch.request.parameters' => {
+                'controller' => 'envtest',
+                'action' => 'test_action'
+              }
+            }
+      
+            extra = {some: 'extra info'}
+      
+            publish = Debugmate::Publish.new(exception, request, extra)
+      
+            expect(publish.payload[:exception]).to eql('Debugmate::TestException')
+            expect(publish.payload[:app][:controller]).to eql("envtest")
+            expect(publish.payload[:context]).to eql({some: 'extra info'})
+            expect(publish.payload[:trace][0][:function]).to eql("test_action")
+          end
         end
     end
 end

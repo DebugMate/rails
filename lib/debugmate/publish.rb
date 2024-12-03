@@ -1,8 +1,8 @@
 require 'net/http'
-require 'cockpit/context'
-require 'cockpit/trace'
+require 'debugmate/context'
+require 'debugmate/trace'
 
-module Cockpit
+module Debugmate
     class Publish
         def initialize(exception, request = {}, extra_data = nil)
             @exception = exception
@@ -11,15 +11,17 @@ module Cockpit
         end
 
         def execute
-            uri = URI("#{COCKPIT_CONFIG['data']['domain']}/api/capture")
+            uri = URI("#{DEBUGMATE_CONFIG['data']['domain']}/api/capture")
       
             headers = {
-                'X-COCKPIT-TOKEN' => COCKPIT_CONFIG['data']['token'],
+                'X-DEBUGMATE-TOKEN' => DEBUGMATE_CONFIG['data']['token'],
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             }
 
             result = Net::HTTP.post(uri, payload.to_json, headers)
+
+            result
         end
 
         def payload
@@ -36,9 +38,11 @@ module Cockpit
                 app: context.app,
                 request: context.request,
                 environment: context.environment,
-                user: context.user,
-                context: context.extra_data
+                user: context.user || [],
+                context: context.extra_data || []
             }
+
+            data
         end
     end
 end

@@ -1,7 +1,7 @@
-namespace :cockpit do
+namespace :debugmate do
     desc "Send fake data to webhook"
     task test: :environment do
-      Cockpit::ExceptionHandler.send_test
+      Debugmate::ExceptionHandler.send_test
     end
   
 end

@@ -1,6 +1,6 @@
-require 'cockpit/curl'
+require 'debugmate/curl'
 
-module Cockpit
+module Debugmate
     class Context
         attr_accessor :env, :extra_data
 
@@ -28,6 +28,8 @@ module Cockpit
                     data: nil
                 }
             }
+
+            app
         end
 
         def route_params
@@ -67,16 +69,20 @@ module Cockpit
                 session: session,
                 cookies: {}
             }
+
+            request_info
         end
 
         def url_headers
             headers = {}
 
-             # Based on https://github.com/rails/rails/blob/7-0-stable/actionpack/lib/action_dispatch/middleware/show_exceptions.rb
-             request = ActionDispatch::Request.new @env
+            # Based on https://github.com/rails/rails/blob/7-0-stable/actionpack/lib/action_dispatch/middleware/show_exceptions.rb
+            request = ActionDispatch::Request.new @env
 
-             # Headers are extracted using splat operator. This is based on https://github.com/rails/rails/blob/7-0-stable/actionpack/lib/action_dispatch/middleware/templates/rescues/_request_and_response.html.erb
-             headers = request.env.slice(*request.class::ENV_METHODS) if @env.is_a? Hash
+            # Headers are extracted using splat operator. This is based on https://github.com/rails/rails/blob/7-0-stable/actionpack/lib/action_dispatch/middleware/templates/rescues/_request_and_response.html.erb
+            headers = request.env.slice(*request.class::ENV_METHODS) if @env.is_a? Hash
+
+            headers
         end
 
         def session
@@ -85,6 +91,8 @@ module Cockpit
             request = ActionDispatch::Request.new @env
 
             session = request.session.to_h
+
+            session
         end
 
         def environment
@@ -114,16 +122,18 @@ module Cockpit
                     }
                 }
             ]
+
+            environment
         end
 
         def user
-            user_controller = nil
-            user_controller = @env['action_controller.instance'] if @env['action_controller.instance']
-    
-            user = user_controller.send(:current_user) if user_controller
-            rescue NoMethodError => e
             begin
-                user = nil
+              user_controller = @env['action_controller.instance'] if @env['action_controller.instance']
+              user = user_controller.send(:current_user) if user_controller
+
+              user
+            rescue NoMethodError
+                nil
             end
         end
     end
