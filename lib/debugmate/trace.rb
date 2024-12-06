@@ -39,7 +39,6 @@ module Debugmate
       def extract_class(backtrace_line)
         return "Unknown" if backtrace_line.nil?
         
-        # Tenta extrair o nome da classe do backtrace
         match = backtrace_line.match(/^(.+?):(\d+):in/)
         if match
           file_path = match[1]
