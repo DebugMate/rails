@@ -5,26 +5,12 @@ Exception handling for Ruby on Rails
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "debugmate"
-```
-
-While the gem is not published in RubyGems, you can install from this repo directly:
-
-```ruby
-gem 'debugmate', :git => 'https://github.com/DebugMate/rails', :branch => 'main'
-```
-
-You can also clone this repo and point the path to the gem if you want to contribute or test locally:
-
-`../debugmate` is relative to the project and the folder name is the one you decided when cloning the repo.
-
-```ruby
-gem "debugmate", :path => "../debugmate"
+gem 'debugmate', '~> 0.1.2'
 ```
 
 And then execute:
 ```bash
-bundle
+bundle install
 ```
 
 Or install it yourself as:
@@ -37,9 +23,9 @@ Create `config/debugmate.yml` in your rails application and provide the followin
 
 ```yaml
 data:
-  domain: http://debugmate.test
+  domain: your-domain
   enabled: true
-  token: 9dd70ed8-f3b2-4244-890e-c4f666d108ed
+  token: your-token
 ```
 
 Create `config/initializers/debugmate.rb` with the following line:
@@ -83,11 +69,28 @@ module Blog
 end
 ```
 
-You can check that your setup is correct by issuing the test command as follows:
+To verify that your Debugmate setup is correct, follow these steps:
+
+1. Create the Rake Task File
+Add the following content to a new file called lib/tasks/debugmate_task.rake in your project
+
+```ruby
+namespace :debugmate do
+  desc "Send fake data to webhook"
+  task test: :environment do
+    Debugmate::ExceptionHandler.send_test
+  end
+end
+```
+
+2. Run the Test Command
+After adding the Rake task, run the following command in your terminal to test the setup:
 
 ```bash
 rails debugmate:test
 ```
+
+This command will send fake data to your configured webhook, allowing you to verify that Debugmate is working correctly.
 
 ## Get the current User
 
